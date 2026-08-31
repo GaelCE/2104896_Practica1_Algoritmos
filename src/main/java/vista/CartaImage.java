@@ -18,27 +18,26 @@ public class CartaImage extends Label {
         crearImagenCarta();
     }
 
-    public CartaImage(String backCard){
-        crearImagenCartaBack(backCard);
+    private void crearImagenCarta() {
+        String ruta = obtenerRuta();
+        Image cartaImagen = new Image(getClass().getResourceAsStream(ruta));
+        ImageView view = new ImageView(cartaImagen);
+        if (carta.isFaceup()) {
+            view.setFitWidth(width);
+            view.setFitHeight(height);
+        } else {
+            view.setFitWidth(width);
+            view.setFitHeight(height+19);
+        }
+        setGraphic(view);
     }
 
     private void crearImagenCartaBack(String ruta){
         this.ruta = ruta;
-        File archivo = new File(ruta);
-        Image cartaImagen = new Image(archivo.toURI().toString());
+        Image cartaImagen = new Image(getClass().getResourceAsStream(ruta));
         ImageView view = new ImageView(cartaImagen);
         view.setFitWidth(width * 1.1);
         view.setFitHeight(height * 1.1);
-        setGraphic(view);
-    }
-
-    private void crearImagenCarta() {
-        String ruta = obtenerRuta();
-        File archivo = new File(ruta);
-        Image cartaImagen = new Image(archivo.toURI().toString());
-        ImageView view = new ImageView(cartaImagen);
-        view.setFitWidth(width);
-        view.setFitHeight(height);
         setGraphic(view);
     }
 
@@ -58,9 +57,11 @@ public class CartaImage extends Label {
     }
 
     private String obtenerRuta(){
-        String ruta = "src/main/java/com/example/_104896_practica1_algoritmos/cartas/";
-        ruta += obtenerValor() + "_of_" + obtenerPalo() + ".png";
-        return ruta;
+        if (carta.isFaceup()) {
+            return "/cartas/"+obtenerValor()+"_of_"+obtenerPalo()+".png";
+        } else {
+            return "/cartas/Backcard.png";
+        }
     }
 
     private String obtenerValor(){

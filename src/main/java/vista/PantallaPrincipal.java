@@ -1,14 +1,17 @@
 package vista;
 
 import controlador.Controlador;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import modelo.CartaInglesa;
 import modelo.Jugador;
-import javafx.scene.control.Label;
 
 public class PantallaPrincipal{
     private AnchorPane paneBlackJack;
@@ -22,37 +25,8 @@ public class PantallaPrincipal{
     private static final double RESGAEL = 1080.0;
 
     public PantallaPrincipal(Controlador controlador){
-        paneBlackJack = new AnchorPane();
+        paneBlackJack=new AnchorPane();
         this.controlador=controlador;
-
-        ImageView background=new ImageView(new Image(getClass().getResourceAsStream("/recursos/mesaBlackJack.png")));
-        background.setFitWidth(1280);
-        background.setFitHeight(720);
-        background.setPreserveRatio(false);
-
-        hbCartasCrupier=new HBox(10);
-        hbCartasJugador=new HBox(10);
-
-        btPedirCarta=new ImageButton("/recursos/botonPedirCarta.png","/recursos/botonPedirCartaBrillante.png",370,200);
-        btPedirCarta.setOnAction(e->{
-            controlador.pedirCarta();
-            actualizarPantalla();
-        });
-
-
-        btPlantarse=new ImageButton("/recursos/botonPlantarse.png","/recursos/botonPlantarseBrillante.png",370,200);
-        btPlantarse.setOnAction(e->{
-            controlador.plantarse();
-            actualizarPantalla();
-        });
-
-        //Posicionamiento de los elementos de la pantalla
-        posicionarEnPane(btPedirCarta,450/RESX,800/RESGAEL);
-        posicionarEnPane(btPlantarse,950/RESX,800/RESGAEL);
-        posicionarEnPane(hbCartasJugador,830/RESX,570/RESGAEL);
-        posicionarEnPane(hbCartasCrupier,830/RESX,50/RESGAEL);
-
-        paneBlackJack.getChildren().addAll(background,hbCartasCrupier,hbCartasJugador,btPedirCarta,btPlantarse);
         actualizarPantalla();
     }
 
@@ -63,25 +37,102 @@ public class PantallaPrincipal{
         nodo.translateYProperty().bind(paneBlackJack.heightProperty().multiply(porcentajeY));
     }
 
+    private void transicionDeRonda(Jugador jugador){
+        paneBlackJack.getChildren().clear();
+
+        ImageView background=new ImageView(new Image(getClass().getResourceAsStream("/recursos/mesaBlackJack.png")));
+        background.setPreserveRatio(false);
+        background.fitWidthProperty().bind(paneBlackJack.widthProperty());
+        background.fitHeightProperty().bind(paneBlackJack.heightProperty());
+        paneBlackJack.getChildren().add(background);
+
+        VBox caja=new VBox(15);
+        caja.setAlignment(Pos.CENTER);
+        caja.setStyle("-fx-background-color:#0d2010;-fx-padding:30;-fx-border-color:#c8a96e;-fx-border-width:2;");
+
+        Label lbNombre=new Label(jugador.getNombre());
+        lbNombre.setStyle("-fx-text-fill:#f5d97a;-fx-font-size:24px;-fx-font-weight:bold;");
+
+        HBox cajaCartas=new HBox(10);
+        cajaCartas.setAlignment(Pos.CENTER);
+        for(CartaInglesa carta:jugador.getMano()){
+            cajaCartas.getChildren().add(new CartaImage(carta));
+        }
+
+        Label lbPuntaje=new Label("Puntaje: "+jugador.getPuntaje());
+        lbPuntaje.setStyle("-fx-text-fill:white;-fx-font-size:18px;");
+
+        Label lbEstado=new Label(jugador.getSePaso()?"Se pasó de 21":"Turno terminado");
+        lbEstado.setStyle("-fx-text-fill:"+(jugador.getSePaso()?"#ff6666":"#88ff88")+";-fx-font-size:18px;-fx-font-weight:bold;");
+
+        Button btnContinuar=new Button("Continuar");
+        btnContinuar.setOnAction(e->actualizarPantalla());
+
+        caja.getChildren().addAll(lbNombre,cajaCartas,lbPuntaje,lbEstado,btnContinuar);
+        posicionarEnPane(caja,0.35,0.35);
+        paneBlackJack.getChildren().add(caja);
+    }
+
+    private void construirPantallaJuego(){
+        paneBlackJack.getChildren().clear();
+
+        ImageView background=new ImageView(new Image(getClass().getResourceAsStream("/recursos/mesaBlackJack.png")));
+        background.setPreserveRatio(false);
+        background.fitWidthProperty().bind(paneBlackJack.widthProperty());
+        background.fitHeightProperty().bind(paneBlackJack.heightProperty());
+
+        lbJugadorActual=new Label();
+        hbCartasCrupier=new HBox(10);
+        hbCartasJugador=new HBox(10);
+
+        btPedirCarta=new ImageButton("/recursos/botonPedirCarta.png","/recursos/botonPedirCartaBrillante.png",370,200);
+        btPedirCarta.setOnAction(e->{
+            Jugador jugadorAntes=controlador.getJugadorEnTurno();
+            controlador.pedirCarta();
+            if(controlador.getUltimoJugador()==jugadorAntes){
+                transicionDeRonda(jugadorAntes);
+            }else{
+                actualizarPantalla();
+            }
+        });
+
+        btPlantarse=new ImageButton("/recursos/botonPlantarse.png","/recursos/botonPlantarseBrillante.png",370,200);
+        btPlantarse.setOnAction(e->{
+            Jugador jugadorAntes=controlador.getJugadorEnTurno();
+            controlador.plantarse();
+            transicionDeRonda(jugadorAntes);
+        });
+
+        paneBlackJack.getChildren().addAll(background,hbCartasCrupier,hbCartasJugador,btPedirCarta,btPlantarse,lbJugadorActual);
+
+        posicionarEnPane(btPedirCarta,450/RESX,800/RESGAEL);
+        posicionarEnPane(btPlantarse,950/RESX,800/RESGAEL);
+        posicionarEnPane(hbCartasCrupier,830/RESX,50/RESGAEL);
+        posicionarEnPane(lbJugadorActual,20/RESX,20/RESGAEL);
+    }
+
     private void actualizarPantalla(){
+        construirPantallaJuego();
+
         if(controlador.esRondaTerminada()){
-            //mostrarResultados();
             return;
         }
 
         Jugador actual=controlador.getJugadorEnTurno();
-        //lbTurno.setText("Turno de: "+actual.getNombre());
+        lbJugadorActual.setText("Turno de: "+actual.getNombre());
 
         hbCartasJugador.getChildren().clear();
         for(CartaInglesa carta:actual.getMano()){
             hbCartasJugador.getChildren().add(new CartaImage(carta));
         }
 
+        double posicionX=830-(actual.getMano().size()-2)*100;
+        posicionarEnPane(hbCartasJugador,posicionX/RESX,570/RESGAEL);
+
         hbCartasCrupier.getChildren().clear();
         for(CartaInglesa carta:controlador.getManoCrupier()){
             hbCartasCrupier.getChildren().add(new CartaImage(carta));
         }
-
     }
 
     //Getter para testeo

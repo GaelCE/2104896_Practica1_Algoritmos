@@ -10,6 +10,7 @@ public class Controlador{
     private BlackJack blackJack;
     private int indiceTurnoActual;
     private boolean rondaTerminada;
+    private Jugador ultimoJugador;
 
     public Controlador(ArrayList<Jugador> jugadores){
         blackJack=new BlackJack(jugadores);
@@ -36,13 +37,6 @@ public class Controlador{
         avanzarTurno();
     }
 
-    private void avanzarTurno(){
-        indiceTurnoActual++;
-        if(indiceTurnoActual>=blackJack.getJugadores().size()){
-            finalizarRonda();
-        }
-    }
-
     private void finalizarRonda(){
         blackJack.finalizarRonda();
         rondaTerminada=true;
@@ -50,6 +44,18 @@ public class Controlador{
 
     public boolean esRondaTerminada(){
         return rondaTerminada;
+    }
+
+    private void avanzarTurno(){
+        ultimoJugador=getJugadorEnTurno();
+        indiceTurnoActual++;
+        if(indiceTurnoActual>=blackJack.getJugadores().size()){
+            finalizarRonda();
+        }
+    }
+
+    public Jugador getUltimoJugador(){
+        return ultimoJugador;
     }
 
     public String getResultado(Jugador jugador){
