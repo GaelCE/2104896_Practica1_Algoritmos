@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import modelo.CartaInglesa;
 import modelo.Jugador;
@@ -113,8 +114,8 @@ public class PantallaPrincipal{
 
     private void actualizarPantalla(){
         construirPantallaJuego();
-
         if(controlador.esRondaTerminada()){
+            resultados();
             return;
         }
 
@@ -133,6 +134,78 @@ public class PantallaPrincipal{
         for(CartaInglesa carta:controlador.getManoCrupier()){
             hbCartasCrupier.getChildren().add(new CartaImage(carta));
         }
+    }
+
+    public void resultados(){
+        paneBlackJack.getChildren().clear();
+
+        ImageView background=new ImageView(new Image(getClass().getResourceAsStream("/recursos/mesaBlackJack.png")));
+        background.setPreserveRatio(false);
+        background.fitWidthProperty().bind(paneBlackJack.widthProperty());
+        background.fitHeightProperty().bind(paneBlackJack.heightProperty());
+        paneBlackJack.getChildren().add(background);
+
+        VBox caja=new VBox(15);
+        caja.setAlignment(Pos.CENTER);
+        caja.setStyle("-fx-background-color:#0d2010;-fx-padding:30;-fx-border-color:#c8a96e;-fx-border-width:2;");
+
+        HBox jugadores=new HBox(15);
+        jugadores.setAlignment(Pos.CENTER);
+
+        for (Jugador jugador : controlador.getJugadores()) {
+            VBox resultadoJugador = new VBox(15);
+            resultadoJugador.setAlignment(Pos.CENTER);
+
+            Label lbNombre = new Label(jugador.getNombre());
+            lbNombre.setStyle("-fx-text-fill:#f5d97a;-fx-font-size:24px;-fx-font-weight:bold;");
+
+            HBox cajaCartas = new HBox(10);
+            cajaCartas.setAlignment(Pos.CENTER);
+            for (CartaInglesa carta : jugador.getMano()) {
+                cajaCartas.getChildren().add(new CartaImage(carta));
+            }
+
+            Label lbPuntaje = new Label("Puntaje: " + jugador.getPuntaje());
+            lbPuntaje.setStyle("-fx-text-fill:white;-fx-font-size:18px;");
+
+            Label lbResultado = new Label(controlador.getResultado(jugador));
+            lbResultado.setStyle("-fx-text-fill:"+(jugador.getSePaso()?"#ff6666":"#88ff88")+";-fx-font-size:18px;-fx-font-weight:bold;");
+
+            resultadoJugador.getChildren().addAll(lbNombre,cajaCartas,lbPuntaje,lbResultado);
+            jugadores.getChildren().add(resultadoJugador);
+        }
+        Label lbCrupier = new Label("Crupier");
+        lbCrupier.setStyle("-fx-text-fill:#f5d97a;-fx-font-size:24px;-fx-font-weight:bold;");
+        HBox cajaCartas = new HBox(10);
+        Label lbPuntaje = new Label("Puntaje: " + controlador.getPuntajeCrupier());
+        lbPuntaje.setStyle("-fx-text-fill:white;-fx-font-size:18px;");
+
+        cajaCartas.setAlignment(Pos.CENTER);
+        for (CartaInglesa carta : controlador.getManoCrupier()){
+            cajaCartas.getChildren().add(new CartaImage(carta));
+        }
+
+        Button btnNuevaRonda=new Button("Nueva Ronda");
+        btnNuevaRonda.setOnAction(e->actualizarPantalla());
+        Button btnIrAlMenu=new Button("Volver al menú");
+        //btnIrAlMenu.setOnAction;
+        Button btnSalir=new Button("Salir");
+        HBox cajaBotones=new HBox(10);
+        cajaBotones.setAlignment(Pos.CENTER);
+        cajaBotones.getChildren().addAll(btnNuevaRonda,btnSalir,btnIrAlMenu);
+
+        caja.getChildren().addAll(lbCrupier,cajaCartas,lbPuntaje,jugadores,cajaBotones);
+        centrarEnPane(caja,20/RESGAEL);
+        paneBlackJack.getChildren().add(caja);
+    }
+
+    private void centrarEnPane(Region nodo, double porcentajeY){
+        nodo.translateXProperty().bind(
+                paneBlackJack.widthProperty().subtract(nodo.widthProperty()).divide(2)
+        );
+        nodo.translateYProperty().bind(
+                paneBlackJack.heightProperty().multiply(porcentajeY)
+        );
     }
 
     //Getter para testeo
