@@ -124,6 +124,7 @@ public class PantallaPrincipal{
 
         Jugador actual=controlador.getJugadorEnTurno();
         lbJugadorActual.setText("Turno de: "+actual.getNombre());
+        lbJugadorActual.setStyle("-fx-text-fill:#f5d97a;-fx-font-size:24px;-fx-font-weight:bold;");
 
         hbCartasJugador.getChildren().clear();
         for(CartaInglesa carta:actual.getMano()){
