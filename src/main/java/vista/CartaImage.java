@@ -5,8 +5,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import modelo.CartaInglesa;
 
-import java.io.File;
-
 public class CartaImage extends Label {
 
     private double width = 100;

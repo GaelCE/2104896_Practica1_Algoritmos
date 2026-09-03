@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class Jugador {
     private ArrayList<CartaInglesa> mano;
     private String nombre;
-    private boolean sePlanto;
 
     public Jugador(String nombre){
         mano = new ArrayList<>();
@@ -18,10 +17,6 @@ public class Jugador {
 
     public void vaciarMano(){
         mano.clear();
-    }
-
-    public void setSePlanto(boolean decision){
-        sePlanto=decision;
     }
 
     public void setUpMano(){
@@ -57,9 +52,5 @@ public class Jugador {
 
     public boolean getSePaso(){
         return getPuntaje()>21;
-    }
-
-    public boolean getSePlanto(){
-        return sePlanto;
     }
 }

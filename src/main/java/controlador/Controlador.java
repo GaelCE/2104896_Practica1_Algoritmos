@@ -54,6 +54,12 @@ public class Controlador{
         }
     }
 
+    public void reiniciarRonda(){
+        blackJack.nuevaRonda();
+        indiceTurnoActual=0;
+        rondaTerminada=false;
+    }
+
     public Jugador getUltimoJugador(){
         return ultimoJugador;
     }

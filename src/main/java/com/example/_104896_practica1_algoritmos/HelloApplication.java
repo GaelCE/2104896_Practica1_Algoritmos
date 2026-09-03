@@ -4,29 +4,33 @@ import controlador.Controlador;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import modelo.Jugador;
+import vista.PantallaConfiguracion;
 import vista.PantallaPrincipal;
-
-import java.util.ArrayList;
 
 public class HelloApplication extends Application {
 
-    //ArrayList de testeo
-    private ArrayList<Jugador>jugadores;
-
     @Override
     public void start(Stage stage){
-        jugadores=new ArrayList<>();
-        jugadores.add(new Jugador("Jugador1"));
-        jugadores.add(new Jugador("Jugador2"));
-        Controlador controlador = new Controlador(jugadores);
+        mostrarConfiguracion(stage);
+    }
 
-        PantallaPrincipal pantallaPrincipal = new PantallaPrincipal(controlador);
+    private void mostrarConfiguracion(Stage stage){
+        PantallaConfiguracion configuracion=new PantallaConfiguracion();
+        configuracion.getBotonComenzar().setOnAction(e->{
+            Controlador controlador=new Controlador(configuracion.getJugadores());
+            PantallaPrincipal pantallaPrincipal=new PantallaPrincipal(controlador);
 
-        Scene scene = new Scene(pantallaPrincipal.getPane(), 1280, 720);
-        stage.setTitle("BlackJack - Pantalla Principal");
-        stage.setScene(scene);
-        stage.show();
+            pantallaPrincipal.getBotonIrAlMenu().setOnAction(ev->mostrarConfiguracion(stage));
+
+            stage.getScene().setRoot(pantallaPrincipal.getPane());
+        });
+
+        if(stage.getScene()==null){
+            stage.setScene(new Scene(configuracion,1280,720));
+            stage.show();
+        }else{
+            stage.getScene().setRoot(configuracion);
+        }
     }
 
 }

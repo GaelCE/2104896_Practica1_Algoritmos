@@ -1,6 +1,7 @@
 package vista;
 
 import controlador.Controlador;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -22,12 +23,14 @@ public class PantallaPrincipal{
     private HBox hbCartasCrupier;
     private ImageButton btPedirCarta;
     private ImageButton btPlantarse;
+    private Button btnIrAlMenu;
     private static final double RESX = 1920.0;
     private static final double RESGAEL = 1080.0;
 
     public PantallaPrincipal(Controlador controlador){
         paneBlackJack=new AnchorPane();
         this.controlador=controlador;
+        btnIrAlMenu=new Button("Volver al menú");
         actualizarPantalla();
     }
 
@@ -185,11 +188,11 @@ public class PantallaPrincipal{
             cajaCartas.getChildren().add(new CartaImage(carta));
         }
 
-        Button btnNuevaRonda=new Button("Nueva Ronda");
-        btnNuevaRonda.setOnAction(e->actualizarPantalla());
-        Button btnIrAlMenu=new Button("Volver al menú");
-        //btnIrAlMenu.setOnAction;
+        Button btnNuevaRonda=new Button("Jugar de nuevo");
+        btnNuevaRonda.setOnAction(e->nuevaRonda());
         Button btnSalir=new Button("Salir");
+        btnSalir.setOnAction(e-> Platform.exit());
+
         HBox cajaBotones=new HBox(10);
         cajaBotones.setAlignment(Pos.CENTER);
         cajaBotones.getChildren().addAll(btnNuevaRonda,btnSalir,btnIrAlMenu);
@@ -206,6 +209,15 @@ public class PantallaPrincipal{
         nodo.translateYProperty().bind(
                 paneBlackJack.heightProperty().multiply(porcentajeY)
         );
+    }
+
+    private void nuevaRonda(){
+        controlador.reiniciarRonda();
+        actualizarPantalla();
+    }
+
+    public Button getBotonIrAlMenu(){
+        return btnIrAlMenu;
     }
 
     //Getter para testeo

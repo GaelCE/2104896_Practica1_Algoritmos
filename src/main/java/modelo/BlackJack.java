@@ -30,23 +30,27 @@ public class BlackJack{
 
     public String showdown(Jugador jugador){
         if(jugador.getSePaso()){
-            return "Perdio";
+            return "Perdió";
         }else if(crupier.getSePaso()||jugador.getPuntaje()>crupier.getPuntaje()){
-            return "Gano";
+            return "Ganó";
         }else if(crupier.getPuntaje()>jugador.getPuntaje()){
-            return "Perdio";
+            return "Perdió";
         }else{
             return "Empate";
         }
     }
 
-    public boolean todosPlantados(){
-        for(Jugador jugador:jugadores){
-            if(!jugador.getSePlanto()){
-                return false;
-            }
+    public void nuevaRonda(){
+        mazo = new Mazo();
+        for (int i=0;i<jugadores.size();i++){
+            jugadores.get(i).vaciarMano();
+            repartirCarta(jugadores.get(i));
+            repartirCarta(jugadores.get(i));
         }
-        return true;
+        crupier.vaciarMano();
+        crupier.recibirCarta(mazo.obtenerUnaCarta());
+        crupier.recibirCarta(mazo.obtenerUnaCarta());
+        crupier.getMano().getFirst().makeFaceUp();
     }
 
     public boolean todosSePasaron(){
@@ -59,7 +63,7 @@ public class BlackJack{
     }
 
     public void turnoCrupier(){
-        while(crupier.getPuntaje()<17){
+        while(crupier.debePedirCarta()){
             repartirCarta(crupier);
         }
     }
